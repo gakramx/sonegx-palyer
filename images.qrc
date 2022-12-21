@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/svg_images/close_icon.svg</file>
+        <file>images/svg_images/home_icon.svg</file>
+        <file>images/svg_images/icon_app_top.svg</file>
+        <file>images/svg_images/maximize_icon.svg</file>
+        <file>images/svg_images/menu_icon.svg</file>
+        <file>images/svg_images/minimize_icon.svg</file>
+        <file>images/svg_images/open_icon.svg</file>
+        <file>images/svg_images/resize_icon.svg</file>
+        <file>images/svg_images/restore_icon.svg</file>
+        <file>images/svg_images/save_icon.svg</file>
+        <file>images/svg_images/settings_icon.svg</file>
+        <file>images/icon.ico</file>
+    </qresource>
+</RCC>

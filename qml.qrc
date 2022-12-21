@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/main.qml</file>
+        <file>qml/controls/ToggleButton.qml</file>
+        <file>qml/controls/TopBarButton.qml</file>
+        <file>qml/controls/LeftMenuButton.qml</file>
+    </qresource>
+</RCC>
