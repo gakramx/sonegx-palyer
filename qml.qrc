@@ -4,5 +4,6 @@
         <file>qml/controls/ToggleButton.qml</file>
         <file>qml/controls/TopBarButton.qml</file>
         <file>qml/controls/LeftMenuButton.qml</file>
+        <file>qml/pages/board.qml</file>
     </qresource>
 </RCC>

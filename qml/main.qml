@@ -3,7 +3,7 @@ import QtQuick.Controls 6.3
 import Qt5Compat.GraphicalEffects
 import QtQuick.Dialogs
 import "controls"
-
+import "pages"
 Window {
     flags: Qt.Window | Qt.FramelessWindowHint
     id: mainWindow
@@ -98,7 +98,7 @@ Window {
         anchors.leftMargin: windowMargin
         anchors.bottomMargin: windowMargin
         anchors.topMargin: windowMargin
-
+        z:1
         Rectangle {
             id: appContainer
             color: "#00000000"
@@ -299,13 +299,16 @@ Window {
                             id: homeBtn
                             width: leftMenu.width
                             text: qsTr("Home")
+                          onClicked: {
+                          stackView.push("qrc:/qml/pages/board.qml")
+                          }
                         }
 
                         LeftMenuButton {
                             id: openBtn
                             width: leftMenu.width
                             text: qsTr("Open")
-                            isActiveMenu: false
+
                             btnIconSource: "../../images/svg_images/open_icon.svg"
                             onClicked: {dlg.open()}
                         }
@@ -314,7 +317,6 @@ Window {
                             id: saveBtn
                             width: leftMenu.width
                             text: qsTr("Save")
-                            isActiveMenu: false
                             btnIconSource: "../../images/svg_images/save_icon.svg"
                         }
                     }
@@ -324,8 +326,8 @@ Window {
                         width: leftMenu.width
                         text: qsTr("Settings")
                         anchors.bottom: parent.bottom
-                        isActiveMenu: false
                         btnIconSource: "../../images/svg_images/settings_icon.svg"
+
                         anchors.bottomMargin: 30
                     }
                 }
@@ -339,6 +341,30 @@ Window {
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: 25
                     anchors.leftMargin: 0
+                    clip: true
+                    Rectangle{
+                        id: bpage
+                        anchors.fill: parent
+
+                        Rectangle {
+                            id: videoArea
+                            color: "#000000"
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            anchors.leftMargin: 576
+                            anchors.bottomMargin: 226
+                            anchors.topMargin: 23
+                            anchors.rightMargin: 17
+
+                        }
+                    }
+                /* StackView {
+                                              id: stackView
+                                              anchors.fill: parent
+                                             initialItem: "qrc:/qml/pages/board.qml" //Qt.resolvedUrl("pages/board.qml")
+                                          }*/
                 }
 
                 Rectangle {
@@ -351,35 +377,8 @@ Window {
                     anchors.rightMargin: 0
                     anchors.bottomMargin: 0
                     anchors.leftMargin: 0
-                    anchors.topMargin: -45
+                    anchors.topMargin: -19
 
-
-
-                    Rectangle {
-                        id: rectangle
-                        color: "#ffffff"
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.top: parent.top
-                        anchors.bottom: label.top
-                        anchors.rightMargin: 0
-                        anchors.leftMargin: 0
-                        anchors.topMargin: 0
-                        anchors.bottomMargin: 0
-                    }
-                    Label {
-                        id: label
-                        color: "#5f6a82"
-                        text: qsTr("Label")
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.top: rectangle.top
-                        anchors.bottom: parent.bottom
-                        anchors.topMargin: 0
-                        anchors.leftMargin: 20
-                        font.pointSize: 10
-                        anchors.rightMargin: 35
-                    }
                     MouseArea {
                         id: resizeWindow
                         x: 884
@@ -478,6 +477,10 @@ Window {
             onActiveChanged: if (active) { mainWindow.startSystemResize(Qt.BottomEdge) }
         }
     }
+  /*  Component.onCompleted:
+             {
+            stackView.push("qrc:/qml/pages/board.qml")
+             }*/
 
 
 }

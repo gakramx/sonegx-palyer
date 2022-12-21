@@ -5,6 +5,7 @@ import Qt5Compat.GraphicalEffects
 Button{
     id: btnLeftMenu
     text: qsTr("Left Menu Text")
+    icon.color: "#ffffff"
 
     // CUSTOM PROPERTIES
     property url btnIconSource: "../../images/svg_images/home_icon.svg"
@@ -15,7 +16,7 @@ Button{
     property int iconHeight: 18
     property color activeMenuColor: "#55aaff"
     property color activeMenuColorRight: "#2c313c"
-    property bool isActiveMenu: true
+
 
     QtObject{
         id: internal
