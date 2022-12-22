@@ -6,6 +6,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 6.2 COMPONENTS Quick REQUIRED)
+
+find_package(Qt6 6.2 COMPONENTS QuickControls2 REQUIRED)
 qt_add_resources( MY_RESOURCE qml.qrc
 
 )
@@ -32,7 +34,7 @@ set_target_properties(appsonegx_player PROPERTIES
 )
 
 target_link_libraries(appsonegx_player
-    PRIVATE Qt6::Quick)
+    PRIVATE Qt6::Quick Qt6::QuickControls2)
 
 install(TARGETS appsonegx_player
     BUNDLE DESTINATION .

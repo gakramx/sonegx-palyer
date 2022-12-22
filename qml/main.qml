@@ -1,7 +1,8 @@
 import QtQuick
-import QtQuick.Controls 6.3
+import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
 import QtQuick.Dialogs
+import QtMultimedia 5.9
 import "controls"
 import "pages"
 Window {
@@ -16,6 +17,7 @@ Window {
     minimumWidth: 800
     property int windowStatus: 0
     property int windowMargin: 10
+
     QtObject{
         id: internal
         function resetResizeBorders(){
@@ -74,10 +76,11 @@ Window {
         //    folder: shortcuts.movies
         //   selectMultiple: false
 
-        //modality: Qt.WindowModal
+        modality: Qt.WindowModal
         onAccepted: {
             console.log("You chose: " + selectedFile)
-            //  player.source = selectedFile
+              videoPlayer.source = selectedFile
+            //loader_timeline.source="qrc:/qml/video_timeline.qml"
             return
         }
         onRejected: {
@@ -357,8 +360,93 @@ Window {
                             anchors.bottomMargin: 226
                             anchors.topMargin: 23
                             anchors.rightMargin: 17
+                            Video {
+                                id: videoPlayer
+                                anchors.fill: parent
+                                volume: 0.5
+                                onPositionChanged: {
+                               // control.handle.x= control.handle.x+control.position
+                                    console.log(videoPlayer.position / videoPlayer.duration)
+                                }
+                            }
+                         }
+
+                        Row {
+                            id: videoBtns
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.top: videoArea.bottom
+                            anchors.bottom: parent.bottom
+                            anchors.topMargin: 7
+                            anchors.bottomMargin: 184
+                            anchors.leftMargin: 656
+                            anchors.rightMargin: 96
+
+                            VideoButtons {
+                                id: videoPlayBtn
+                                onClicked: {
+                                    videoPlayer.play()
+                                }
+
+                            }
+
+                            VideoButtons {
+                                id: videoButtons1
+                            }
+                        }
+
+                        Rectangle {
+                            id: rectangle
+                            color: "#7e7e7e"
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.top: videoBtns.bottom
+                            anchors.bottom: parent.bottom
+                            anchors.leftMargin: 24
+                            anchors.bottomMargin: 28
+                            anchors.topMargin: 72
+                            anchors.rightMargin: 30
+                            Slider {
+                                        id: progressSlider
+                                        x: 0
+                                        y: 0
+                                        width: parent.width
+                                        anchors.bottom: parent.bottom
+                                        anchors.bottomMargin: 79
+                                        enabled: videoPlayer.seekable
+                                        value: videoPlayer.duration > 0 ? videoPlayer.position / videoPlayer.duration : 0
+                                        background: Rectangle {
+                                            implicitHeight: 2
+                                            color: "white"
+                                            radius: 3
+                                            Rectangle {
+                                                width: progressSlider.visualPosition * parent.width
+                                                height: parent.height
+                                                color: "#1D8BF8"
+                                                radius: 3
+                                            }
+                                        }
+                                        handle: Rectangle {
+                                            x: progressSlider.leftPadding + progressSlider.position * (progressSlider.availableWidth - width)
+                                            y: progressSlider.topPadding + progressSlider.availableHeight / 2 - height / 2
+                                            implicitWidth: 5
+                                            implicitHeight: 5
+                                            radius: 13
+                                            color: progressSlider.pressed ? "#f0f0f0" : "#f6f6f6"
+                                            border.color: "#bdbebf"
+                                        }
+                                        onMoved: function () {
+                                            videoPlayer.position = videoPlayer.duration * progressSlider.position
+                                        }
+                                    }
+
 
                         }
+
+
+
+
+
                     }
                 /* StackView {
                                               id: stackView
@@ -489,6 +577,6 @@ Window {
 
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:0.75}D{i:29}
+    D{i:0;formeditorZoom:0.75}
 }
 ##^##*/
