@@ -11,6 +11,11 @@ Rectangle{
     function update(){
     console.log(x+"x"+y)
     }
+   /*   property int timeToHide: 4000
+    Timer {
+           interval: timeToHide; running: true; repeat: true
+           onTriggered: parent.visible=false
+       }*/
     onXChanged: update()
     onYChanged: update()
     Button {

@@ -558,16 +558,15 @@ Window {
                             }
 
                             Button {
-                                id: button
+                                id: addReactBtn
                                 x: 218
                                 y: 200
-                                text: qsTr("Button")
+                                text: qsTr("Add")
                                 onClicked: {
                                     var component;
                                     var sprite;
                                     component = Qt.createComponent("qrc:/qml/pages/ReactMess.qml");
-                                     sprite = component.createObject(videoArea, {"x": 4, "y": 4});
-
+                                    sprite = component.createObject(videoArea, {"x": 4, "y": 4});
                                 }
                             }
                         }
