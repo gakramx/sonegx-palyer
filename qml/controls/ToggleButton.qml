@@ -7,6 +7,7 @@ Button {
            property color btnColorDefault: "#1c1d20"
            property color btnColorMouseOver: "#23272E"
     property color btnColorClicked: "#00a1f1"
+    icon.color: "#ffffff"
 
 
            QtObject{

@@ -6,5 +6,6 @@
         <file>qml/controls/LeftMenuButton.qml</file>
         <file>qml/pages/board.qml</file>
         <file>qml/controls/VideoButtons.qml</file>
+        <file>qml/pages/ReactMess.qml</file>
     </qresource>
 </RCC>

@@ -3,6 +3,7 @@ import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
 import QtQuick.Dialogs
 import QtMultimedia 5.9
+import QtQuick.Layouts
 import "controls"
 import "pages"
 Window {
@@ -79,7 +80,7 @@ Window {
         modality: Qt.WindowModal
         onAccepted: {
             console.log("You chose: " + selectedFile)
-              videoPlayer.source = selectedFile
+            videoPlayer.source = selectedFile
             //loader_timeline.source="qrc:/qml/video_timeline.qml"
             return
         }
@@ -302,9 +303,9 @@ Window {
                             id: homeBtn
                             width: leftMenu.width
                             text: qsTr("Home")
-                          onClicked: {
-                          stackView.push("qrc:/qml/pages/board.qml")
-                          }
+                            onClicked: {
+                                stackView.push("qrc:/qml/pages/board.qml")
+                            }
                         }
 
                         LeftMenuButton {
@@ -352,95 +353,232 @@ Window {
                         Rectangle {
                             id: videoArea
                             color: "#000000"
+                            border.width:3
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.top: parent.top
                             anchors.bottom: parent.bottom
-                            anchors.leftMargin: 576
-                            anchors.bottomMargin: 226
-                            anchors.topMargin: 23
-                            anchors.rightMargin: 17
+                            anchors.bottomMargin: 233
+                            anchors.leftMargin: 429
+                            anchors.topMargin: 17
+                            anchors.rightMargin: 13
+
+                            border.color :"red"
                             Video {
                                 id: videoPlayer
-                                anchors.fill: parent
-                                volume: 0.5
+                                 volume: 0.5
+                                 anchors.fill: parent
+                                 anchors.rightMargin: 4
+                                 anchors.leftMargin: 4
+                                 anchors.bottomMargin: 4
+                                 anchors.topMargin: 4
                                 onPositionChanged: {
-                               // control.handle.x= control.handle.x+control.position
+                                    // control.handle.x= control.handle.x+control.position
                                     console.log(videoPlayer.position / videoPlayer.duration)
                                 }
                             }
-                         }
+
+
+
+
+                        }
 
                         Row {
                             id: videoBtns
-                            anchors.left: parent.left
+                            x: 801
+                            y: 280
                             anchors.right: parent.right
-                            anchors.top: videoArea.bottom
                             anchors.bottom: parent.bottom
-                            anchors.topMargin: 7
-                            anchors.bottomMargin: 184
-                            anchors.leftMargin: 656
-                            anchors.rightMargin: 96
+                            anchors.bottomMargin: 178
+                            anchors.rightMargin: 46
+
 
                             VideoButtons {
                                 id: videoPlayBtn
                                 onClicked: {
-                                    videoPlayer.play()
+                                    if (videoPlayer.playbackState==1)
+                                        videoPlayer.pause()
+                                    else
+                                        videoPlayer.play()
                                 }
 
                             }
-
                             VideoButtons {
-                                id: videoButtons1
+                                id: videSeekDecrease
+                                onClicked: {
+                                    videoPlayer.seek(videoPlayer.position - 20000)
+                                }
                             }
+                            VideoButtons {
+                                id:videSeekIncrease
+                                onClicked: {
+                                    videoPlayer.seek(videoPlayer.position + 20000)
+                                }
+                            }
+
+
+
+
                         }
 
                         Rectangle {
                             id: rectangle
+                            y: 319
+                            height: 130
                             color: "#7e7e7e"
                             anchors.left: parent.left
                             anchors.right: parent.right
-                            anchors.top: videoBtns.bottom
                             anchors.bottom: parent.bottom
-                            anchors.leftMargin: 24
-                            anchors.bottomMargin: 28
-                            anchors.topMargin: 72
-                            anchors.rightMargin: 30
+                            anchors.bottomMargin: 44
+                            anchors.leftMargin: 8
+                            anchors.rightMargin: 5
+
                             Slider {
-                                        id: progressSlider
-                                        x: 0
-                                        y: 0
-                                        width: parent.width
-                                        anchors.bottom: parent.bottom
-                                        anchors.bottomMargin: 79
-                                        enabled: videoPlayer.seekable
-                                        value: videoPlayer.duration > 0 ? videoPlayer.position / videoPlayer.duration : 0
-                                        background: Rectangle {
-                                            implicitHeight: 2
-                                            color: "white"
-                                            radius: 3
-                                            Rectangle {
-                                                width: progressSlider.visualPosition * parent.width
-                                                height: parent.height
-                                                color: "#1D8BF8"
-                                                radius: 3
-                                            }
-                                        }
-                                        handle: Rectangle {
-                                            x: progressSlider.leftPadding + progressSlider.position * (progressSlider.availableWidth - width)
-                                            y: progressSlider.topPadding + progressSlider.availableHeight / 2 - height / 2
-                                            implicitWidth: 5
-                                            implicitHeight: 5
-                                            radius: 13
-                                            color: progressSlider.pressed ? "#f0f0f0" : "#f6f6f6"
-                                            border.color: "#bdbebf"
-                                        }
-                                        onMoved: function () {
-                                            videoPlayer.position = videoPlayer.duration * progressSlider.position
-                                        }
+                                id: progressSlider
+                                x: 0
+                                y: 0
+                                width: parent.width
+                                anchors.bottom: parent.bottom
+                                anchors.bottomMargin: 125
+                                enabled: videoPlayer.seekable
+                                value: videoPlayer.duration > 0 ? videoPlayer.position / videoPlayer.duration : 0
+                                background: Rectangle {
+                                    implicitHeight: 2
+                                    color: "white"
+                                    radius: 3
+                                    Rectangle {
+                                        width: progressSlider.visualPosition * parent.width
+                                        height: parent.height
+                                        color: "#1D8BF8"
+                                        radius: 3
+                                    }
+                                }
+                                handle: Rectangle {
+                                    x: progressSlider.leftPadding + progressSlider.position * (progressSlider.availableWidth - width)
+                                    y: progressSlider.topPadding + progressSlider.availableHeight / 2 - height / 2
+                                    implicitWidth: 5
+                                    implicitHeight: 5
+                                    radius: 13
+                                    color: progressSlider.pressed ? "#f0f0f0" : "#f6f6f6"
+                                    border.color: "#bdbebf"
+                                }
+                                onMoved: function () {
+                                    videoPlayer.position = videoPlayer.duration * progressSlider.position
+                                }
+                            }
+                            Canvas {
+                                id: mycanvas3
+                                width: 2
+                                height:  parent.height
+                                x:progressSlider.handle.x
+                                onPaint: {
+                                    var ctx = getContext("2d");
+                                    ctx.fillStyle = Qt.rgba(1, 0, 0, 1);
+                                    ctx.fillRect(0, 0, width, height);
+                                }
+                            }
+                            RowLayout {
+                                id: rowLayout
+                                x: 0
+                                y: 60
+                                width: 890
+                                height: 16
+                            }
+                            Item {
+                                width: parent.width
+                                height: 3
+                                anchors.top: parent.top
+                                anchors.topMargin: 21
+                                property real spacing: 15
+                                x: 0
+                                Repeater {
+                                    model: parent.width / (parent.spacing + 1) - 1
+                                    delegate: Rectangle {
+                                        x: index * (rowLayout.spacing + 20)
+                                        y: parent.height - height
+                                        implicitWidth: major ? 2  : 1
+                                        implicitHeight: major ? 18 : 9
+                                        color: "green"
+
+                                        readonly property bool major: index % 3 == 0
                                     }
 
+                                }
+                            }
 
+                        }
+
+                        Rectangle {
+                            id: objArea
+                            width: 315
+                            height: 243
+                            color: "#00ff7f"
+                            anchors.left: parent.left
+                            anchors.top: parent.top
+                            anchors.leftMargin: 8
+                            anchors.topMargin: 17
+
+                            clip: true
+
+                            Column {
+                                id: column1
+                                width: 159
+                                anchors.left: parent.left
+                                anchors.top: parent.top
+                                anchors.bottom: parent.bottom
+                                anchors.leftMargin: 8
+                                anchors.topMargin: 8
+                                anchors.bottomMargin: 8
+
+
+
+                                Label {
+                                    id: label
+                                    text: qsTr("Label")
+                                }
+                                TextInput {
+                                    id: reactName
+                                    width: 80
+                                    height: 20
+                                    font.pixelSize: 12
+                                    clip: true
+                                }
+
+                                Label {
+                                    id: label1
+                                    text: qsTr("Label")
+                                }
+
+                                TextInput {
+                                    id: reactText
+                                    width: 100
+                                    height: 40
+                                    font.pixelSize: 12
+                                }
+                            }
+
+                            Button {
+                                id: button
+                                x: 218
+                                y: 200
+                                text: qsTr("Button")
+                                onClicked: {
+                                    var component;
+                                    var sprite;
+                                    component = Qt.createComponent("qrc:/qml/pages/ReactMess.qml");
+                                     sprite = component.createObject(videoArea, {"x": 4, "y": 4});
+
+                                }
+                            }
+                        }
+
+                        Label {
+                            id: timePlay
+                            x: 8
+                            y: 280
+                            width: 93
+                            height: 17
+                            text: qsTr("Label")
                         }
 
 
@@ -448,7 +586,7 @@ Window {
 
 
                     }
-                /* StackView {
+                    /* StackView {
                                               id: stackView
                                               anchors.fill: parent
                                              initialItem: "qrc:/qml/pages/board.qml" //Qt.resolvedUrl("pages/board.qml")
@@ -565,7 +703,7 @@ Window {
             onActiveChanged: if (active) { mainWindow.startSystemResize(Qt.BottomEdge) }
         }
     }
-  /*  Component.onCompleted:
+    /*  Component.onCompleted:
              {
             stackView.push("qrc:/qml/pages/board.qml")
              }*/
@@ -577,6 +715,6 @@ Window {
 
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:0.75}
+    D{i:0;formeditorZoom:0.75}D{i:29}D{i:31}D{i:35}D{i:46}D{i:45}
 }
 ##^##*/
