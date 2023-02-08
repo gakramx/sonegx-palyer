@@ -16,6 +16,8 @@ qt_add_resources( MY_RESOURCE2 images.qrc
 )
 qt_add_executable(appsonegx_player
     main.cpp
+    jsonfile.cpp
+    jsonfile.h
    ${MY_RESOURCE}
    ${MY_RESOURCE2}
 )

@@ -65,9 +65,6 @@ Rectangle{
         onClicked: {
             reactName.text=parent.name
             reactText.text=recText.text
-
-
-
         }
     }
 }

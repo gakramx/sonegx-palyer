@@ -6,22 +6,29 @@ import QtMultimedia 5.9
 import QtQuick.Layouts
 import "controls"
 import "pages"
+import JsonFile
+
 Window {
     flags: Qt.Window | Qt.FramelessWindowHint
     id: mainWindow
     width: 1024
     height: 580
+    //  width: Screen.width
+    //height: Screen.height
+    //visibility:Window.FullScreen
     visible: true
     title: qsTr("Tpro app")
     color: "#00000000"
+    property alias mycanvas3: mycanvas3
+    property alias topBarInfoLabel: topBarInfoLabel
     minimumHeight: 500
     minimumWidth: 800
     property int windowStatus: 0
     property int windowMargin: 10
 
-    QtObject{
+    QtObject {
         id: internal
-        function resetResizeBorders(){
+        function resetResizeBorders() {
             // Resize visibility
             resizeLeft.visible = true
             resizeRight.visible = true
@@ -29,8 +36,8 @@ Window {
             resizeWindow.visible = true
         }
 
-        function maximizeRestore(){
-            if(windowStatus == 0){
+        function maximizeRestore() {
+            if (windowStatus == 0) {
                 mainWindow.showMaximized()
                 windowStatus = 1
                 windowMargin = 0
@@ -40,8 +47,7 @@ Window {
                 resizeBottom.visible = false
                 resizeWindow.visible = false
                 topBarMaxBtn.btnIconSource = "../../images/svg_images/restore_icon.svg"
-            }
-            else{
+            } else {
                 mainWindow.showNormal()
                 windowStatus = 0
                 windowMargin = 10
@@ -51,8 +57,8 @@ Window {
             }
         }
 
-        function ifMaximizedWindowRestore(){
-            if(windowStatus == 1){
+        function ifMaximizedWindowRestore() {
+            if (windowStatus == 1) {
                 mainWindow.showNormal()
                 windowStatus = 0
                 windowMargin = 10
@@ -62,21 +68,46 @@ Window {
             }
         }
 
-        function restoreMargins(){
+        function restoreMargins() {
             windowStatus = 0
             windowMargin = 10
             // Resize visibility
             internal.resetResizeBorders()
             topBarMaxBtn.btnIconSource = "../../images/svg_images/maximize_icon.svg"
         }
+       /* function msToTimeString(ms) {
+            var totalSec = Math.floor(ms / 1000)
+            var min = Math.floor(totalSec / 60)
+            var sec = totalSec - min * 60
+            if (min <= 9)
+                min = "0" + min
+            if (sec <= 9)
+                sec = "0" + sec
+            return min + ":" + sec
+        }*/
+        function msToTimeString(duration) {
+          var milliseconds = Math.floor((duration % 1000) / 100),
+            seconds = Math.floor((duration / 1000) % 60),
+            minutes = Math.floor((duration / (1000 * 60)) % 60),
+            hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+          hours = (hours < 10) ? "0" + hours : hours;
+          minutes = (minutes < 10) ? "0" + minutes : minutes;
+          seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+          return hours + ":" + minutes + ":" + seconds; //+ "." + milliseconds;
+        }
+        function toMilliseconds(hrs,min,sec){
+            return (hrs*60*60+min*60+sec)*1000;
+        }
     }
     FileDialog {
         id: dlg
-        nameFilters: [ "Video files (*.mp4 *.flv *.ts *.mpg *.3gp *.ogv *.m4v *.mov)", "All files (*)" ]
+        nameFilters: ["Video files (*.mp4 *.flv *.ts *.mpg *.3gp *.ogv *.m4v *.mov)", "All files (*)"]
         title: "Please choose a video file"
+
         //    folder: shortcuts.movies
         //   selectMultiple: false
-
         modality: Qt.WindowModal
         onAccepted: {
             console.log("You chose: " + selectedFile)
@@ -102,7 +133,7 @@ Window {
         anchors.leftMargin: windowMargin
         anchors.bottomMargin: windowMargin
         anchors.topMargin: windowMargin
-        z:1
+        z: 1
         Rectangle {
             id: appContainer
             color: "#00000000"
@@ -124,7 +155,7 @@ Window {
                 anchors.topMargin: 0
 
                 ToggleButton {
-                    onClicked: animationMenu.running=true
+                    onClicked: animationMenu.running = true
                 }
 
                 Rectangle {
@@ -184,7 +215,7 @@ Window {
                     anchors.leftMargin: 70
                     anchors.topMargin: 0
                     DragHandler {
-                        onActiveChanged: if(active){
+                        onActiveChanged: if (active) {
                                              mainWindow.startSystemMove()
                                          }
                     }
@@ -216,8 +247,8 @@ Window {
                         MouseArea {
                             id: mouseResize
                             anchors.fill: parent
-                            onDoubleClicked: {internal.maximizeRestore()
-
+                            onDoubleClicked: {
+                                internal.maximizeRestore()
                             }
                         }
                     }
@@ -239,7 +270,6 @@ Window {
                             mainWindow.showMinimized()
                             internal.restoreMargins()
                         }
-
                     }
 
                     TopBarButton {
@@ -279,11 +309,14 @@ Window {
                     anchors.leftMargin: 0
                     anchors.bottomMargin: 0
                     anchors.topMargin: 0
-                    PropertyAnimation{
-                        id:animationMenu
+                    PropertyAnimation {
+                        id: animationMenu
                         target: leftMenu
                         property: "width"
-                        to: if(leftMenu.width == 70) return 250; else return 70
+                        to: if (leftMenu.width == 70)
+                                return 250
+                            else
+                                return 70
                         duration: 500
                         easing.type: Easing.InOutQuint
                     }
@@ -314,7 +347,9 @@ Window {
                             text: qsTr("Open")
 
                             btnIconSource: "../../images/svg_images/open_icon.svg"
-                            onClicked: {dlg.open()}
+                            onClicked: {
+                                dlg.open()
+                            }
                         }
 
                         LeftMenuButton {
@@ -322,6 +357,33 @@ Window {
                             width: leftMenu.width
                             text: qsTr("Save")
                             btnIconSource: "../../images/svg_images/save_icon.svg"
+                            onClicked: {
+                                //  console.log(JSON.stringify(jsonFile.read()))
+                                var store = JSON.stringify(jsonFile.read())
+                                var data = jsonFile.read()
+
+                                //    data.color="green"
+                                //var feed = {age:88, name: "akram2", powers:["Radiation resistance","Turning tiny","Radiation blast"], secretIdentity: "chaima"};
+                                //  data.members.push(feed)
+                                //   console.log(data.members[0].age)
+                                //    jsonFile.name="foo.json"
+                                //  data.members[1].age=88
+                                // var members
+                                var timeline_data = data.timeline.sort(
+                                            (a, b) => {
+                                                if (a.show_time < b.show_time) {
+                                                    return -1
+                                                }
+                                            })
+                                console.log(JSON.stringify(timeline_data))
+                                delete data.timeline
+                                data["timeline"] = timeline_data
+
+                                //    data.push(JSON.stringify(timeline_data))
+                                console.log(JSON.stringify(data))
+                                console.log(jsonFile.write(
+                                                JSON.stringify(data)))
+                            }
                         }
                     }
 
@@ -346,14 +408,14 @@ Window {
                     anchors.bottomMargin: 25
                     anchors.leftMargin: 0
                     clip: true
-                    Rectangle{
+                    Rectangle {
                         id: bpage
                         anchors.fill: parent
 
                         Rectangle {
                             id: videoArea
                             color: "#000000"
-                            border.width:3
+                            border.width: 3
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.top: parent.top
@@ -363,24 +425,23 @@ Window {
                             anchors.topMargin: 17
                             anchors.rightMargin: 13
 
-                            border.color :"red"
+                            border.color: "red"
                             Video {
                                 id: videoPlayer
-                                 volume: 0.5
-                                 anchors.fill: parent
-                                 anchors.rightMargin: 4
-                                 anchors.leftMargin: 4
-                                 anchors.bottomMargin: 4
-                                 anchors.topMargin: 4
+                                volume: 0.5
+                                anchors.fill: parent
+                                anchors.rightMargin: 4
+                                anchors.leftMargin: 4
+                                anchors.bottomMargin: 4
+                                anchors.topMargin: 4
                                 onPositionChanged: {
                                     // control.handle.x= control.handle.x+control.position
                                     console.log(videoPlayer.position / videoPlayer.duration)
+
+                                    console.log("x" + progressSlider.handle.x
+                                                + "y" + progressSlider.handle.y)
                                 }
                             }
-
-
-
-
                         }
 
                         Row {
@@ -392,33 +453,29 @@ Window {
                             anchors.bottomMargin: 178
                             anchors.rightMargin: 46
 
-
                             VideoButtons {
                                 id: videoPlayBtn
                                 onClicked: {
-                                    if (videoPlayer.playbackState==1)
+                                    if (videoPlayer.playbackState == 1)
                                         videoPlayer.pause()
                                     else
                                         videoPlayer.play()
                                 }
-
                             }
                             VideoButtons {
                                 id: videSeekDecrease
                                 onClicked: {
-                                    videoPlayer.seek(videoPlayer.position - 20000)
+                                    videoPlayer.seek(
+                                                videoPlayer.position - 20000)
                                 }
                             }
                             VideoButtons {
-                                id:videSeekIncrease
+                                id: videSeekIncrease
                                 onClicked: {
-                                    videoPlayer.seek(videoPlayer.position + 20000)
+                                    videoPlayer.seek(
+                                                videoPlayer.position + 20000)
                                 }
                             }
-
-
-
-
                         }
 
                         Rectangle {
@@ -441,7 +498,8 @@ Window {
                                 anchors.bottom: parent.bottom
                                 anchors.bottomMargin: 125
                                 enabled: videoPlayer.seekable
-                                value: videoPlayer.duration > 0 ? videoPlayer.position / videoPlayer.duration : 0
+                                value: videoPlayer.duration
+                                       > 0 ? videoPlayer.position / videoPlayer.duration : 0
                                 background: Rectangle {
                                     implicitHeight: 2
                                     color: "white"
@@ -454,8 +512,10 @@ Window {
                                     }
                                 }
                                 handle: Rectangle {
-                                    x: progressSlider.leftPadding + progressSlider.position * (progressSlider.availableWidth - width)
-                                    y: progressSlider.topPadding + progressSlider.availableHeight / 2 - height / 2
+                                    x: progressSlider.leftPadding + progressSlider.position
+                                       * (progressSlider.availableWidth - width)
+                                    y: progressSlider.topPadding
+                                       + progressSlider.availableHeight / 2 - height / 2
                                     implicitWidth: 5
                                     implicitHeight: 5
                                     radius: 13
@@ -463,18 +523,19 @@ Window {
                                     border.color: "#bdbebf"
                                 }
                                 onMoved: function () {
-                                    videoPlayer.position = videoPlayer.duration * progressSlider.position
+                                    videoPlayer.position = videoPlayer.duration
+                                            * progressSlider.position
                                 }
                             }
                             Canvas {
                                 id: mycanvas3
                                 width: 2
-                                height:  parent.height
-                                x:progressSlider.handle.x
+                                height: parent.height
+                                x: progressSlider.handle.x
                                 onPaint: {
-                                    var ctx = getContext("2d");
-                                    ctx.fillStyle = Qt.rgba(1, 0, 0, 1);
-                                    ctx.fillRect(0, 0, width, height);
+                                    var ctx = getContext("2d")
+                                    ctx.fillStyle = Qt.rgba(1, 0, 0, 1)
+                                    ctx.fillRect(0, 0, width, height)
                                 }
                             }
                             RowLayout {
@@ -496,77 +557,250 @@ Window {
                                     delegate: Rectangle {
                                         x: index * (rowLayout.spacing + 20)
                                         y: parent.height - height
-                                        implicitWidth: major ? 2  : 1
+                                        implicitWidth: major ? 2 : 1
                                         implicitHeight: major ? 18 : 9
                                         color: "green"
 
                                         readonly property bool major: index % 3 == 0
                                     }
-
                                 }
                             }
-
                         }
 
                         Rectangle {
                             id: objArea
-                            width: 315
-                            height: 243
+                            width: 398
                             color: "#00ff7f"
                             anchors.left: parent.left
                             anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: 233
                             anchors.leftMargin: 8
                             anchors.topMargin: 17
-
+                            JsonFile {
+                                id: jsonFile
+                                name: "jsfile.json"
+                            }
                             clip: true
-
+                            ListModel {
+                                id: listModel
+                            }
                             Column {
                                 id: column1
-                                width: 159
+                                width: 164
+                                spacing: 10
                                 anchors.left: parent.left
                                 anchors.top: parent.top
                                 anchors.bottom: parent.bottom
                                 anchors.leftMargin: 8
                                 anchors.topMargin: 8
-                                anchors.bottomMargin: 8
-
-
+                                anchors.bottomMargin: 121
 
                                 Label {
                                     id: label
-                                    text: qsTr("Label")
+                                    text: qsTr("Name")
                                 }
-                                TextInput {
+
+                                TextField {
                                     id: reactName
                                     width: 80
                                     height: 20
+                                    text: qsTr("Text Edit")
+
                                     font.pixelSize: 12
-                                    clip: true
+                                    background: Rectangle {
+                                        radius: 2
+                                        implicitWidth: 100
+                                        implicitHeight: 24
+                                        border.color: "#333"
+                                        border.width: 1
+                                    }
                                 }
 
                                 Label {
                                     id: label1
-                                    text: qsTr("Label")
+                                    text: qsTr("Msg text")
                                 }
 
-                                TextInput {
+                                TextField {
                                     id: reactText
-                                    width: 100
-                                    height: 40
+                                    width: 80
+                                    height: 20
+                                    text: qsTr("Text Edit")
                                     font.pixelSize: 12
+                                    background: Rectangle {
+                                        radius: 2
+                                        implicitWidth: 100
+                                        implicitHeight: 24
+                                        border.color: "#333"
+                                        border.width: 1
+                                    }
                                 }
+                                /*TextField {
+
+                                    id: textEditTD
+                                    text: "00:00:00"
+                                    //  inputMask: "99:99:99"
+                                    //    inputMethodHints: Qt.ImhDigitsOnly
+                                    validator: RegularExpressionValidator {
+                                        regularExpression: /^(?:(?:([01]?\d|2[0-3]):)?([0-5]?\d):)?([0-5]?\d)$/
+                                    }
+
+                                    width: 100
+                                    height: 50
+                                }*/
                             }
 
                             Button {
                                 id: addReactBtn
-                                x: 218
-                                y: 200
+                                x: 186
+                                y: 202
                                 text: qsTr("Add")
                                 onClicked: {
-                                    var component;
-                                    var sprite;
-                                    component = Qt.createComponent("qrc:/qml/pages/ReactMess.qml");
-                                    sprite = component.createObject(videoArea, {"x": 4, "y": 4});
+                                    var component
+                                    var sprite
+                                    component = Qt.createComponent(
+                                                  "qrc:/qml/pages/ReactMess.qml")
+                                    //  anchors.verticalCenter: parent.verticalCenter
+                                    //anchors.horizontalCenter: parent.horizontalCenter
+                                    sprite = component.createObject(videoArea, {
+                                                                        "anchors.verticalCenter": videoArea.verticalCenter,
+                                                                        "anchors.horizontalCenter": videoArea.horizontalCenter
+                                                                    })
+                                    rectangle1.appendIfNotExist(reactName.text,reactText.text)
+                                }
+                            }
+
+                            Rectangle {
+                                id: rectangle1
+                                x: 186
+                                y: 12
+                                width: 208
+                                height: 184
+                                color: "#ffffff"
+
+                                ListModel {
+                                    id: channelModelId
+                                }
+
+                                ListView {
+                                    id: timelineList
+                                    anchors {
+                                        fill: parent
+                                        margins: 10
+                                    }
+                                    model: channelModelId
+                                    delegate: Item {
+                                        width: parent.width
+                                        height: 40
+                                        Column {
+                                            Text {
+                                                text: 'Name:' + model.name
+                                            }
+
+                                            Text {
+                                                text: 'Time:' + internal.msToTimeString( model.rtime)
+                                            }
+                                        }
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            onClicked: timelineList.currentIndex = index
+                                        }
+                                    }
+                                    highlight: Rectangle {
+                                        color: 'grey'
+                                    }
+                                    focus: true
+                                    flickableDirection: Flickable.VerticalFlick
+                                    boundsBehavior: Flickable.StopAtBounds
+                                    clip: true
+
+                                    ScrollBar.vertical: vbar
+
+                                    ScrollBar {
+                                        id: vbar
+                                        active: true
+                                        orientation: Qt.Vertical
+                                        size: timelineList.height / timelineList.contentHeight
+                                        position: timelineList.currentItem
+                                        policy: ScrollBar.active
+                                        anchors.top: parent.top
+                                        anchors.right: parent.right
+                                        anchors.bottom: parent.bottom
+                                    }
+                                }
+
+                                Component.onCompleted: {
+
+                                    //I will fetch JSON api. For testing purpose this will work
+                                    //  channelModelId.append({"name" : "hello"})
+                                    //  appendIfNotExist({"name" : "hello"})
+                                    //   appendIfNotExist({"name" : "hello"})
+                                }
+                                function appendIfNotExist(recName,recText) {
+                                    for (var i = 0; i < channelModelId.count; i++) {
+                                        if (channelModelId.get(
+                                                    i).name === recName) {
+                                            console.log("Exist")
+                                            return
+                                        }
+                                    }
+                                    channelModelId.append({
+                                                              "name": recName,
+                                                              "text": recText,
+                                                              "rtime": internal.toMilliseconds(spinHour.value,spinMin.value,spinSec.value)
+                                                          })
+                                }
+                            }
+
+                            Button {
+                                id: button2
+                                x: 310
+                                y: 202
+                                text: qsTr("remove")
+                                onClicked: {
+                                    channelModelId.remove(
+                                                timelineList.currentIndex)
+                                }
+                            }
+
+                            Rectangle {
+                                id: rectangle2
+                                x: 8
+                                y: 142
+                                width: 164
+                                height: 54
+                                color: "#ffffff"
+
+                                SpinBox {
+                                    id: spinHour
+                                    x: 8
+                                    y: 14
+                                    width: 49
+                                    height: 25
+
+                                     from: 00
+                                     to: 59//Math.floor(videoPlayer.duration % 1000)
+                                }
+
+                                SpinBox {
+                                    id: spinMin
+                                    x: 58
+                                    y: 14
+                                    width: 49
+                                    height: 25
+                                    from: 00
+                                    to:59
+                                }
+
+                                SpinBox {
+                                    id: spinSec
+                                    x: 107
+                                    y: 14
+                                    width: 49
+                                    height: 25
+                                    from: 00
+                                    to:59
                                 }
                             }
                         }
@@ -575,16 +809,17 @@ Window {
                             id: timePlay
                             x: 8
                             y: 280
-                            width: 93
+                            width: 140
                             height: 17
-                            text: qsTr("Label")
+                            text: internal.msToTimeString(
+                                      videoPlayer.position) + " / " + internal.msToTimeString(
+                                      videoPlayer.duration)
+                            anchors.bottom: rectangle.top
+                            anchors.bottomMargin: 22
                         }
-
-
-
-
-
                     }
+
+
                     /* StackView {
                                               id: stackView
                                               anchors.fill: parent
@@ -617,10 +852,11 @@ Window {
                         anchors.rightMargin: 0
                         cursorShape: Qt.SizeFDiagCursor
 
-                        DragHandler{
+                        DragHandler {
                             target: null
-                            onActiveChanged: if (active){
-                                                 mainWindow.startSystemResize(Qt.RightEdge | Qt.BottomEdge)
+                            onActiveChanged: if (active) {
+                                                 mainWindow.startSystemResize(
+                                                             Qt.RightEdge | Qt.BottomEdge)
                                              }
                         }
 
@@ -643,8 +879,7 @@ Window {
         }
     }
 
-
-    DropShadow{
+    DropShadow {
         anchors.fill: bg
         horizontalOffset: 0
         verticalOffset: 0
@@ -665,9 +900,11 @@ Window {
         anchors.topMargin: 10
         cursorShape: Qt.SizeHorCursor
 
-        DragHandler{
+        DragHandler {
             target: null
-            onActiveChanged: if (active) { mainWindow.startSystemResize(Qt.RightEdge) }
+            onActiveChanged: if (active) {
+                                 mainWindow.startSystemResize(Qt.RightEdge)
+                             }
         }
     }
 
@@ -681,9 +918,11 @@ Window {
         anchors.topMargin: 10
         cursorShape: Qt.SizeHorCursor
 
-        DragHandler{
+        DragHandler {
             target: null
-            onActiveChanged: if (active) { mainWindow.startSystemResize(Qt.LeftEdge) }
+            onActiveChanged: if (active) {
+                                 mainWindow.startSystemResize(Qt.LeftEdge)
+                             }
         }
     }
     MouseArea {
@@ -697,23 +936,15 @@ Window {
         anchors.bottomMargin: 0
         cursorShape: Qt.SizeVerCursor
 
-        DragHandler{
+        DragHandler {
             target: null
-            onActiveChanged: if (active) { mainWindow.startSystemResize(Qt.BottomEdge) }
+            onActiveChanged: if (active) {
+                                 mainWindow.startSystemResize(Qt.BottomEdge)
+                             }
         }
     }
-    /*  Component.onCompleted:
-             {
-            stackView.push("qrc:/qml/pages/board.qml")
-             }*/
-
-
+    Component.onCompleted: {
+        internal.maximizeRestore()
+        // stackView.push("qrc:/qml/pages/board.qml")
+    }
 }
-
-
-
-/*##^##
-Designer {
-    D{i:0;formeditorZoom:0.75}D{i:29}D{i:31}D{i:35}D{i:46}D{i:45}
-}
-##^##*/
